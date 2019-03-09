@@ -4,7 +4,7 @@ Copyright (c) 2019 megagrump@pm.me
 License: MIT
 See LICENSE for details
 ]]
-local class = {}
+local moonclass = {}
 
 local function setupClass(name, base, parent)
 	return {
@@ -33,7 +33,7 @@ local function defineClass(name, base)
 	return class
 end
 
-function class.extend(name, base, parent)
+function moonclass.extend(name, base, parent)
 	base.__index = base
 	setmetatable(base, parent.__base)
 
@@ -58,7 +58,7 @@ function class.extend(name, base, parent)
 
 end
 
-return setmetatable(class, {
+return setmetatable(moonclass, {
 	__call = function(self, name, base)
 		return defineClass(name, base)
 	end
