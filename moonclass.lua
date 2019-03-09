@@ -33,7 +33,7 @@ local function defineClass(name, base)
 	return class
 end
 
-function moonclass.extend(name, base, parent)
+function moonclass.extend(name, parent, base)
 	base.__index = base
 	setmetatable(base, parent.__base)
 
