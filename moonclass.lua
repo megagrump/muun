@@ -1,3 +1,9 @@
+--[[
+moonclass - moonscript compatible class implementation for Lua
+Copyright (c) 2019 megagrump@pm.me
+License: MIT
+See LICENSE for details
+]]
 local class = {}
 
 local function setupClass(name, base, parent)
