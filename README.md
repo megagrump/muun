@@ -21,17 +21,34 @@ function ExtendedClass:initialize(x, y)
 end
 
 -- derive from MoonScriptClass
-ExtendedClass = class.extend('ExtendedClass', ExtendedClass, MoonScriptClass)
+ExtendedClass = class.extend('ExtendedClass', MoonScriptClass, ExtendedClass)
 
 -- create an instance
 local instance = ExtendedClass(23, 42)
 ```
-
+---
 ### Define a class
 
 moonclass can also be used as a minimal, but fully functional class implementation for Lua.
 
 #### Variant 1
+```
+local class = require('moonclass')
+
+-- define class
+local MyClass = class('MyClass', {
+	 -- define constructor
+	initialize = function(self, x, y)
+		self.x, self.y = x, y
+		print("Hi! My position is:", x, y)
+	end,
+})
+
+-- create instance
+local instance = MyClass(23, 42)
+```
+
+#### Variant 2
 ```
 local class = require('moonclass')
 
@@ -50,7 +67,7 @@ MyClass = class('MyClass', MyClass)
 local instance = MyClass(23, 42)
 ```
 
-#### Variant 2
+#### Variant 3
 ```
 local class = require('moonclass')
 
@@ -68,7 +85,36 @@ MyClass = class('MyClass', MyClass)
 -- create instance
 local instance = MyClass(23, 42)
 ```
+---
+### Inheritance
+```
+local Base = class('Base', {
+	initialize = function(self)
+		print("Hi from Base!")
+	end,
 
+	__inherited = function(parent, cls)
+		print(cls.__name .. " inherited from " .. parent.__name)
+	end,
+})
+
+local Derived = class.extend('Derived', Base, {
+	initialize = function(self, ...)
+		self.__class.__parent.initialize(self, ...)
+		print("Hi from Derived!")
+	end,
+})
+
+local instance = Derived()
+```
+
+### Output:
+```
+Derived inherited from Base
+Hi from Base!
+Hi from Derived!
+```
+---
 # License
 
 Copyright 2019 megagrump@pm.me
