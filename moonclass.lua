@@ -37,8 +37,7 @@ function moonclass.extend(name, parent, base)
 	local class, mt = setupClass(name, base, parent)
 	mt.__index = function(cls, name)
 		local val = rawget(base, name)
-		if val == nil then return parent[name] end
-		return val
+		return val == nil and parent[name] or val
 	end
 
 	base.__class, base.__index = class, base
