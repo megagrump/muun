@@ -1,10 +1,11 @@
 # moonclass
 
-A minimal class implementation written in Lua that is compatible with and can extend compiled [moonscript](https://github.com/leafo/moonscript) classes.
+A minimal Lua class implementation that is compatible with [moonscript](https://github.com/leafo/moonscript) classes.  
+
+moonclass can extend classes defined in moonscript from Lua code, and define classes in Lua code that can be extended from moonscript code.
 
 ## How to use
-
-### Extend a moonscript class
+### Extending moonscript classes from Lua code
 ```
 local class = require('moonclass')
 local MoonScriptClass = require('MoonScriptClass') -- the class we want to extend
@@ -12,9 +13,8 @@ local MoonScriptClass = require('MoonScriptClass') -- the class we want to exten
 local ExtendedClass = {}
 
  -- override constructor
-function ExtendedClass:initialize(x, y)
-	-- call parent constructor
-	ExtendedClass.__parent.initialize(self)
+function ExtendedClass:new(x, y)	
+	class.super(self) -- calls MoonScriptClass constructor
 
 	self.x, self.y = x, y
 	print("Hi! My position is:", x, y)
@@ -27,9 +27,43 @@ ExtendedClass = class.extend('ExtendedClass', MoonScriptClass, ExtendedClass)
 local instance = ExtendedClass(23, 42)
 ```
 ---
-### Define a class
+### Extending classes written in Lua from moonscript code
+```
+local class = require('moonclass')
 
-moonclass can also be used as a minimal, but fully functional class implementation for Lua.
+BaseClass = {}
+
+function BaseClass:new()
+	print("Hi from Lua")
+end
+
+function BaseClass:__inherited(cls)
+	print(self.__name, "inherited from", cls.__name)
+end
+
+return class('BaseClass', BaseClass)
+
+```
+```
+BaseClass = require('BaseClass')
+
+class Derived extends BaseClass
+	new: =>
+		super! -- calls the BaseClass constructor
+		print("Hi from moonscript!")
+
+test = Derived!
+```
+#### Output
+```
+Derived	inherited from 	BaseClass
+Hi from Lua!
+Hi from moonscript!
+```
+---
+### Define a class in Lua
+
+moonclass can also be used as a minimal, but fully functional Lua class implementation.
 
 #### Variant 1
 ```
@@ -38,7 +72,7 @@ local class = require('moonclass')
 -- define class
 local MyClass = class('MyClass', {
 	 -- define constructor
-	initialize = function(self, x, y)
+	new = function(self, x, y)
 		self.x, self.y = x, y
 		print("Hi! My position is:", x, y)
 	end,
@@ -55,7 +89,7 @@ local class = require('moonclass')
 local MyClass = {}
 
  -- define constructor
-function MyClass:initialize(x, y)
+function MyClass:new(x, y)
 	self.x, self.y = x, y
 	print("Hi! My position is:", x, y)
 end
@@ -73,7 +107,7 @@ local class = require('moonclass')
 
 local MyClass = {
 	 -- define constructor
-	initialize = function(self, x, y)
+	new = function(self, x, y)
 		self.x, self.y = x, y
 		print("Hi! My position is:", x, y)
 	end,
@@ -87,9 +121,11 @@ local instance = MyClass(23, 42)
 ```
 ---
 ### Inheritance
+moonclass provides three functions for inheritance: `extend`, `super` and `__inherited`.
+`extend` is used to extend a base class. `super` calls the base class constructor. `__inherited` is called when a class extends a base class.
 ```
 local Base = class('Base', {
-	initialize = function(self)
+	new = function(self)
 		print("Hi from Base!")
 	end,
 
@@ -99,8 +135,8 @@ local Base = class('Base', {
 })
 
 local Derived = class.extend('Derived', Base, {
-	initialize = function(self, ...)
-		self.__class.__parent.initialize(self, ...)
+	new = function(self, ...)
+		class.super(self, ...)
 		print("Hi from Derived!")
 	end,
 })
