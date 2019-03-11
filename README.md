@@ -121,8 +121,9 @@ local instance = MyClass(23, 42)
 ```
 ---
 ### Inheritance
-moonclass provides three functions for inheritance: `extend`, `super` and `__inherited`.
-`extend` is used to extend a base class. `super` calls the base class constructor. `__inherited` is called when a class extends a base class.
+moonclass provides two functions for inheritance: `extend` and `super`. `extend` is used to extend a base class. `super` calls the base class constructor.  
+
+If a class implements the `__inherited` method, it gets called when a class extends a base class.
 ```
 local Base = class('Base', {
 	new = function(self)
