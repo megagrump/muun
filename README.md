@@ -67,8 +67,6 @@ moonclass can also be used as a minimal, but fully functional Lua class implemen
 
 #### Variant 1
 ```
-local class = require('moonclass')
-
 -- define class
 local MyClass = class('MyClass', {
 	 -- define constructor
@@ -84,8 +82,6 @@ local instance = MyClass(23, 42)
 
 #### Variant 2
 ```
-local class = require('moonclass')
-
 local MyClass = {}
 
  -- define constructor
@@ -103,8 +99,6 @@ local instance = MyClass(23, 42)
 
 #### Variant 3
 ```
-local class = require('moonclass')
-
 local MyClass = {
 	 -- define constructor
 	new = function(self, x, y)
