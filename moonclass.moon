@@ -14,11 +14,11 @@ setupClass = (__name, __base, __parent) ->
 
 	setmetatable({
 		:__name, :__base, :__parent
-		__init: (...) -> __base.new(...)
+		__init: (...) -> __base.new and __base.new(...)
 	}, mt), mt
 
 moonclass =
-	extend: (name, parent, base) ->
+	extend: (name, parent, base = {}) ->
 		setmetatable(base, parent.__base)
 
 		clazz, mt = setupClass(name, base, parent)
@@ -34,7 +34,7 @@ moonclass =
 	"super": (self, ...) -> self.__class.__parent.__init(self, ...)
 
 setmetatable(moonclass, {
-	__call: (self, name, base) ->
+	__call: (self, name, base = {}) ->
 		clazz, mt = setupClass(name, base)
 		mt.__index, base.__class, base.__index = base, clazz, base
 		clazz

@@ -18,12 +18,15 @@ setupClass = function(__name, __base, __parent)
     __base = __base,
     __parent = __parent,
     __init = function(...)
-      return __base.new(...)
+      return __base.new and __base.new(...)
     end
   }, mt), mt
 end
 local moonclass = {
   extend = function(name, parent, base)
+    if base == nil then
+      base = { }
+    end
     setmetatable(base, parent.__base)
     local clazz, mt = setupClass(name, base, parent)
     mt.__index = function(cls, name)
@@ -46,6 +49,9 @@ local moonclass = {
 }
 return setmetatable(moonclass, {
   __call = function(self, name, base)
+    if base == nil then
+      base = { }
+    end
     local clazz, mt = setupClass(name, base)
     mt.__index, base.__class, base.__index = base, clazz, base
     return clazz
