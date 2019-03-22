@@ -5,7 +5,7 @@ local _ = [[-----------------------------------------------------------------
 -- License: MIT. See LICENSE for details
 -----------------------------------------------------------------]]
 local setup
-setup = function(__name, __base, __parent)
+setup = function(__name, __parent, __base)
   local mt = {
     __call = function(self, ...)
       local obj = setmetatable({ }, __base)
@@ -26,7 +26,7 @@ end
 local extend
 extend = function(name, parent, base)
   setmetatable(base, parent.__base)
-  local cls, mt = setup(name, base, parent)
+  local cls, mt = setup(name, parent, base)
   base.__class, base.__index = cls, base
   mt.__index = function(self, key)
     local val = rawget(base, key)
@@ -59,7 +59,7 @@ return setmetatable(moonclass, {
     if parent then
       return extend(name, parent, base)
     end
-    local cls, mt = setup(name, base)
+    local cls, mt = setup(name, nil, base)
     mt.__index, base.__class, base.__index = base, cls, base
     return cls
   end

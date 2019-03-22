@@ -5,7 +5,7 @@
 -- License: MIT. See LICENSE for details
 -----------------------------------------------------------------]]
 
-setup = (__name, __base, __parent) ->
+setup = (__name, __parent, __base) ->
 	mt =
 		__call: (...) =>
 			obj = setmetatable({}, __base)
@@ -20,7 +20,7 @@ setup = (__name, __base, __parent) ->
 extend = (name, parent, base) ->
 	setmetatable(base, parent.__base)
 
-	cls, mt = setup(name, base, parent)
+	cls, mt = setup(name, parent, base)
 	base.__class, base.__index = cls, base
 
 	mt.__index = (key) =>
@@ -41,7 +41,7 @@ setmetatable(moonclass, {
 		base = not parent and parentOrBase or base or {}
 		return extend(name, parent, base) if parent
 
-		cls, mt = setup(name, base)
+		cls, mt = setup(name, nil, base)
 		mt.__index, base.__class, base.__index = base, cls, base
 		cls
 })
