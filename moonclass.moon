@@ -12,9 +12,10 @@ setup = (__name, __parent, __base) ->
 			@.__init(obj, ...)
 			obj
 		__newindex: (key, value) => __base[key] = value
+	__base.new or= =>
 
 	setmetatable({
-		:__name, :__base, :__parent, __init: __base.new or =>
+		:__name, :__base, :__parent, __init: (...) -> __base.new(...)
 	}, mt), mt
 
 extend = (name, parent, base) ->

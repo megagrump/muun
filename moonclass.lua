@@ -16,11 +16,14 @@ setup = function(__name, __parent, __base)
       __base[key] = value
     end
   }
+  __base.new = __base.new or function(self) end
   return setmetatable({
     __name = __name,
     __base = __base,
     __parent = __parent,
-    __init = __base.new or function(self) end
+    __init = function(...)
+      return __base.new(...)
+    end
   }, mt), mt
 end
 local extend
