@@ -10,7 +10,7 @@ moonclass can extend classes defined in moonscript from Lua code, and define cla
 local class = require('moonclass')
 local MoonScriptClass = require('MoonScriptClass') -- the class we want to extend
 
-local ExtendedClass = {}
+local ExtendedClass = class('ExtendedClass', MoonScriptClass)
 
  -- override constructor
 function ExtendedClass:new(x, y)	
@@ -20,9 +20,6 @@ function ExtendedClass:new(x, y)
 	print("Hi! My position is:", x, y)
 end
 
--- derive from MoonScriptClass
-ExtendedClass = class.extend('ExtendedClass', MoonScriptClass, ExtendedClass)
-
 -- create an instance
 local instance = ExtendedClass(23, 42)
 ```
@@ -31,7 +28,7 @@ local instance = ExtendedClass(23, 42)
 ```
 local class = require('moonclass')
 
-BaseClass = {}
+BaseClass = class('BaseClass')
 
 function BaseClass:new()
 	print("Hi from Lua")
@@ -40,8 +37,6 @@ end
 function BaseClass:__inherited(cls)
 	print(self.__name, "inherited from", cls.__name)
 end
-
-return class('BaseClass', BaseClass)
 
 ```
 ```
@@ -82,16 +77,13 @@ local instance = MyClass(23, 42)
 
 #### Variant 2
 ```
-local MyClass = {}
+local MyClass = class('MyClass')
 
  -- define constructor
 function MyClass:new(x, y)
 	self.x, self.y = x, y
 	print("Hi! My position is:", x, y)
 end
-
--- define class
-MyClass = class('MyClass', MyClass)
 
 -- create instance
 local instance = MyClass(23, 42)
@@ -115,9 +107,9 @@ local instance = MyClass(23, 42)
 ```
 ---
 ### Inheritance
-moonclass provides two functions for inheritance: `extend` and `super`. `extend` is used to extend a base class. `super` calls the base class constructor.  
+moonclass provides a `super` function that the base class constructor.  
 
-If a class implements the `__inherited` method, it gets called when a class extends a base class.
+If a class implements the `__inherited` method, it gets called when a class extends another class.
 ```
 local Base = class('Base', {
 	new = function(self)

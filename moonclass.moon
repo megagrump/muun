@@ -5,37 +5,44 @@
 -- License: MIT. See LICENSE for details
 -----------------------------------------------------------------]]
 
-setupClass = (__name, __base, __parent) ->
+setup = (__name, __base, __parent) ->
 	mt =
-		__call: (cls, ...) ->
-			self = setmetatable({}, __base)
-			cls.__init(self, ...)
-			self
+		__call: (...) =>
+			obj = setmetatable({}, __base)
+			@.__init(obj, ...)
+			obj
+		__newindex: (key, value) => __base[key] = value
+
+	__base.new or= ->
 
 	setmetatable({
-		:__name, :__base, :__parent
-		__init: (...) -> __base.new and __base.new(...)
+		:__name, :__base, :__parent, __init: (...) -> __base.new(...)
 	}, mt), mt
 
+extend = (name, parent, base) ->
+	setmetatable(base, parent.__base)
+
+	cls, mt = setup(name, base, parent)
+
+	mt.__index = (key) =>
+		val = rawget(base, key)
+		val if val ~= nil else parent[key]
+
+	base.__class, base.__index = cls, base
+	parent.__inherited(parent, cls) if parent.__inherited
+	cls
+
 moonclass =
-	extend: (name, parent, base = {}) ->
-		setmetatable(base, parent.__base)
-
-		clazz, mt = setupClass(name, base, parent)
-		mt.__index = (cls, name) ->
-			val = rawget(base, name)
-			val if val ~= nil else parent[name]
-
-		base.__class, base.__index = clazz, base
-		parent.__inherited(parent, clazz) if parent.__inherited
-
-		clazz
-
-	"super": (self, ...) -> self.__class.__parent.__init(self, ...)
+	super: (...) => @.__class.__parent.__init(@, ...)
 
 setmetatable(moonclass, {
-	__call: (self, name, base = {}) ->
-		clazz, mt = setupClass(name, base)
-		mt.__index, base.__class, base.__index = base, clazz, base
-		clazz
+	__call: (name, parentOrBase, base) =>
+		error("Invalid class name") if type(name) ~= 'string'
+		parent = parentOrBase if type(parentOrBase) == 'table' and parentOrBase.__class
+		base = not parent and parentOrBase or base or {}
+		return extend(name, parent, base) if parent
+
+		cls, mt = setup(name, base)
+		mt.__index, base.__class, base.__index = base, cls, base
+		cls
 })
