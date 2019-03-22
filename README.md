@@ -111,22 +111,22 @@ moonclass provides a `super` function that calls the base class constructor.
 
 If a class implements the `__inherited` method, it gets called when a class extends another class.
 ```
-local Base = class('Base', {
-	new = function(self)
-		print("Hi from Base!")
-	end,
+local Base = class('Base')
 
-	__inherited = function(parent, cls)
-		print(cls.__name .. " inherited from " .. parent.__name)
-	end,
-})
+function Base:new(...)
+	print("Hi from Base!")
+end,
 
-local Derived = class.extend('Derived', Base, {
-	new = function(self, ...)
-		class.super(self, ...)
-		print("Hi from Derived!")
-	end,
-})
+function Base.__inherited(parent, cls)
+	print(cls.__name .. " inherited from " .. parent.__name)
+end,
+
+local Derived = class('Derived', Base)
+
+function Derived:new(...)
+	class.super(self, ...)
+	print("Hi from Derived!")
+end,
 
 local instance = Derived()
 ```
