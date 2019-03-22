@@ -13,22 +13,20 @@ setup = (__name, __base, __parent) ->
 			obj
 		__newindex: (key, value) => __base[key] = value
 
-	__base.new or= ->
-
 	setmetatable({
-		:__name, :__base, :__parent, __init: (...) -> __base.new(...)
+		:__name, :__base, :__parent, __init: __base.new or =>
 	}, mt), mt
 
 extend = (name, parent, base) ->
 	setmetatable(base, parent.__base)
 
 	cls, mt = setup(name, base, parent)
+	base.__class, base.__index = cls, base
 
 	mt.__index = (key) =>
 		val = rawget(base, key)
 		val if val ~= nil else parent[key]
 
-	base.__class, base.__index = cls, base
 	parent.__inherited(parent, cls) if parent.__inherited
 	cls
 
@@ -38,6 +36,7 @@ moonclass =
 setmetatable(moonclass, {
 	__call: (name, parentOrBase, base) =>
 		error("Invalid class name") if type(name) ~= 'string'
+
 		parent = parentOrBase if type(parentOrBase) == 'table' and parentOrBase.__class
 		base = not parent and parentOrBase or base or {}
 		return extend(name, parent, base) if parent

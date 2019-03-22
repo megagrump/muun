@@ -16,20 +16,18 @@ setup = function(__name, __base, __parent)
       __base[key] = value
     end
   }
-  __base.new = __base.new or function() end
   return setmetatable({
     __name = __name,
     __base = __base,
     __parent = __parent,
-    __init = function(...)
-      return __base.new(...)
-    end
+    __init = __base.new or function(self) end
   }, mt), mt
 end
 local extend
 extend = function(name, parent, base)
   setmetatable(base, parent.__base)
   local cls, mt = setup(name, base, parent)
+  base.__class, base.__index = cls, base
   mt.__index = function(self, key)
     local val = rawget(base, key)
     if val ~= nil then
@@ -38,7 +36,6 @@ extend = function(name, parent, base)
       return parent[key]
     end
   end
-  base.__class, base.__index = cls, base
   if parent.__inherited then
     parent.__inherited(parent, cls)
   end
