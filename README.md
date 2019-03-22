@@ -107,7 +107,7 @@ local instance = MyClass(23, 42)
 ```
 ---
 ### Inheritance
-moonclass provides a `super` function that the base class constructor.  
+moonclass provides a `super` function that calls the base class constructor.  
 
 If a class implements the `__inherited` method, it gets called when a class extends another class.
 ```
