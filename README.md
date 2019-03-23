@@ -1,13 +1,13 @@
-# moonclass
+# muun
 
 A minimal Lua class implementation that is compatible with [moonscript](https://github.com/leafo/moonscript) classes.  
 
-moonclass can extend classes defined in moonscript from Lua code, and define classes in Lua code that can be extended from moonscript code.
+muun can extend classes defined in moonscript from Lua code, and define classes in Lua code that can be extended from moonscript code.
 
 ## How to use
 ### Extending moonscript classes from Lua code
 ```
-local class = require('moonclass')
+local class = require('muun')
 local MoonScriptClass = require('MoonScriptClass') -- the class we want to extend
 
 local ExtendedClass = class('ExtendedClass', MoonScriptClass)
@@ -26,7 +26,7 @@ local instance = ExtendedClass(23, 42)
 ---
 ### Extending classes written in Lua from moonscript code
 ```
-local class = require('moonclass')
+local class = require('muun')
 
 BaseClass = class('BaseClass')
 
@@ -58,7 +58,7 @@ Hi from moonscript!
 ---
 ### Define a class in Lua
 
-moonclass can also be used as a minimal, but fully functional Lua class implementation.
+muun can also be used as a minimal, but fully functional Lua class implementation.
 
 #### Variant 1
 ```
@@ -107,7 +107,7 @@ local instance = MyClass(23, 42)
 ```
 ---
 ### Inheritance
-moonclass provides a `super` function that calls the base class constructor.  
+muun provides a `super` function that calls the base class constructor.  
 
 If a class implements the `__inherited` method, it gets called when a class extends another class.
 ```
