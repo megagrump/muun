@@ -1,5 +1,5 @@
 local _ = [[-----------------------------------------------------------------
--- moonclass - moonscript compatible class implementation
+-- muun - moonscript compatible class implementation
 
 -- Copyright 2019 megagrump@pm.me
 -- License: MIT. See LICENSE for details
@@ -44,12 +44,12 @@ extend = function(name, parent, base)
   end
   return cls
 end
-local moonclass = {
+local muun = {
   super = function(self, ...)
     return self.__class.__parent.__init(self, ...)
   end
 }
-return setmetatable(moonclass, {
+return setmetatable(muun, {
   __call = function(self, name, parentOrBase, base)
     if type(name) ~= 'string' then
       error("Invalid class name")

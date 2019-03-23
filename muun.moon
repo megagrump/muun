@@ -1,5 +1,5 @@
 [[-----------------------------------------------------------------
--- moonclass - moonscript compatible class implementation
+-- muun - moonscript compatible class implementation
 
 -- Copyright 2019 megagrump@pm.me
 -- License: MIT. See LICENSE for details
@@ -31,10 +31,10 @@ extend = (name, parent, base) ->
 	parent.__inherited(parent, cls) if parent.__inherited
 	cls
 
-moonclass =
+muun =
 	super: (...) => @.__class.__parent.__init(@, ...)
 
-setmetatable(moonclass, {
+setmetatable(muun, {
 	__call: (name, parentOrBase, base) =>
 		error("Invalid class name") if type(name) ~= 'string'
 
