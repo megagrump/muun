@@ -6,7 +6,7 @@ muun can extend classes defined in moonscript from Lua code, and define classes 
 
 ## How to use
 ### Extending moonscript classes from Lua code
-```
+```lua
 local class = require('muun')
 local MoonScriptClass = require('MoonScriptClass') -- the class we want to extend
 
@@ -14,7 +14,7 @@ local ExtendedClass = class('ExtendedClass', MoonScriptClass)
 
  -- override constructor
 function ExtendedClass:new(x, y)	
-	class.super(self) -- calls MoonScriptClass constructor
+	ExtendedClass.__super(self) -- calls MoonScriptClass constructor
 
 	self.x, self.y = x, y
 	print("Hi! My position is:", x, y)
@@ -25,7 +25,7 @@ local instance = ExtendedClass(23, 42)
 ```
 ---
 ### Extending classes written in Lua from moonscript code
-```
+```lua
 local class = require('muun')
 
 BaseClass = class('BaseClass')
@@ -39,7 +39,7 @@ function BaseClass:__inherited(cls)
 end
 
 ```
-```
+```moonscript
 BaseClass = require('BaseClass')
 
 class Derived extends BaseClass
@@ -61,7 +61,7 @@ Hi from moonscript!
 muun can also be used as a minimal, but fully functional Lua class implementation.
 
 #### Variant 1
-```
+```lua
 -- define class
 local MyClass = class('MyClass', {
 	 -- define constructor
@@ -76,7 +76,7 @@ local instance = MyClass(23, 42)
 ```
 
 #### Variant 2
-```
+```lua
 local MyClass = class('MyClass')
 
  -- define constructor
@@ -90,7 +90,7 @@ local instance = MyClass(23, 42)
 ```
 
 #### Variant 3
-```
+```lua
 local MyClass = {
 	 -- define constructor
 	new = function(self, x, y)
@@ -107,28 +107,38 @@ local instance = MyClass(23, 42)
 ```
 ---
 ### Inheritance
-muun provides a `super` function that calls the base class constructor.  
+All derived classes have a `__super` table that acts as a proxy for the base class. **Note**: `__super` is not an alias for the base class as in MoonScript, it's merely a proxy that allows you to access the base class.
 
-If a class implements the `__inherited` method, it gets called when a class extends another class.
-```
+If a class implements the `__inherited` method, it gets called whenever another class extends this class.
+```lua
 local Base = class('Base')
 
 function Base:new(...)
-	print("Hi from Base!")
-end,
+    print("Hi from Base!")
+end
+
+function Base:foo()
+    print("Foo!")
+end
 
 function Base.__inherited(parent, cls)
-	print(cls.__name .. " inherited from " .. parent.__name)
-end,
+    print(cls.__name .. " inherited from " .. parent.__name)
+end
 
 local Derived = class('Derived', Base)
 
 function Derived:new(...)
-	class.super(self, ...)
-	print("Hi from Derived!")
-end,
+    Derived.__super(self, ...)
+    print("Hi from Derived!")
+end
+
+function Derived:foo()
+    Derived.__super.foo(self)
+    print("Bar!")
+end
 
 local instance = Derived()
+instance:foo()
 ```
 
 ### Output:
@@ -136,11 +146,13 @@ local instance = Derived()
 Derived inherited from Base
 Hi from Base!
 Hi from Derived!
+Foo!
+Bar!
 ```
 ---
 # License
 
-Copyright 2019 megagrump@pm.me
+Copyright 2019, 2021 megagrump@pm.me
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 

@@ -16,12 +16,16 @@ setup = (__name, __parent, __base) ->
 
 	__base.new or= =>
 
-	setmetatable({
+	cls = setmetatable({
 		__init: (...) -> __base.new(...)
 		:__name
 		:__base
 		:__parent
-	}, mt), mt
+	}, mt)
+
+	with __base
+		.__class, .__index = cls, __base
+	cls
 
 super = (parent) ->
 	setmetatable({}, {
@@ -32,10 +36,8 @@ super = (parent) ->
 extend = (name, parent, base) ->
 	setmetatable(base, parent.__base)
 
-	cls, mt = setup(name, parent, base)
-	with base
-		.__class, .__index = cls, base
-		.__super = super(parent)
+	cls = setup(name, parent, base)
+	cls.__super = super(parent)
 
 	parent.__inherited(parent, cls) if parent.__inherited
 	cls
@@ -45,8 +47,7 @@ extend = (name, parent, base) ->
 
 	parent = parentOrBase if type(parentOrBase) == 'table' and parentOrBase.__class
 	base = not parent and parentOrBase or base or {}
-	return extend(name, parent, base) if parent
-
-	cls, mt = setup(name, nil, base)
-	mt.__index, base.__class, base.__index = base, cls, base
-	cls
+	if parent
+		extend(name, parent, base)
+	else
+		setup(name, nil, base)

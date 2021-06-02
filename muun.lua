@@ -18,14 +18,18 @@ setup = function(__name, __parent, __base)
     end
   }
   __base.new = __base.new or function(self) end
-  return setmetatable({
+  local cls = setmetatable({
     __init = function(...)
       return __base.new(...)
     end,
     __name = __name,
     __base = __base,
     __parent = __parent
-  }, mt), mt
+  }, mt)
+  do
+    __base.__class, __base.__index = cls, __base
+  end
+  return cls
 end
 local super
 super = function(parent)
@@ -39,11 +43,8 @@ end
 local extend
 extend = function(name, parent, base)
   setmetatable(base, parent.__base)
-  local cls, mt = setup(name, parent, base)
-  do
-    base.__class, base.__index = cls, base
-    base.__super = super(parent)
-  end
+  local cls = setup(name, parent, base)
+  cls.__super = super(parent)
   if parent.__inherited then
     parent.__inherited(parent, cls)
   end
@@ -60,8 +61,7 @@ return function(name, parentOrBase, base)
   base = not parent and parentOrBase or base or { }
   if parent then
     return extend(name, parent, base)
+  else
+    return setup(name, nil, base)
   end
-  local cls, mt = setup(name, nil, base)
-  mt.__index, base.__class, base.__index = base, cls, base
-  return cls
 end
